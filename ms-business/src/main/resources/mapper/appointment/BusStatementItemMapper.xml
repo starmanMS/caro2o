@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ms.car.appointment.mapper.BusStatementItemMapper">
+
+    <resultMap type="BusStatementItem" id="BusStatementItemResult">
+        <result property="id"    column="id"    />
+        <result property="statementId"    column="statement_id"    />
+        <result property="itemId"    column="item_id"    />
+        <result property="itemName"    column="item_name"    />
+        <result property="itemPrice"    column="item_price"    />
+        <result property="itemQuantity"    column="item_quantity"    />
+    </resultMap>
+
+    <sql id="selectBusStatementItemVo">
+        select id, statement_id, item_id, item_name, item_price, item_quantity from bus_statement_item
+    </sql>
+
+    <select id="selectBusStatementItemList" parameterType="BusStatementItem" resultMap="BusStatementItemResult">
+        <include refid="selectBusStatementItemVo"/>
+        where statement_id = #{statementId}
+    </select>
+
+    <insert id="insertBusStatementItem" parameterType="BusStatementItem" useGeneratedKeys="true" keyProperty="id">
+        insert into bus_statement_item
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="statementId != null">statement_id,</if>
+            <if test="itemId != null">item_id,</if>
+            <if test="itemName != null">item_name,</if>
+            <if test="itemPrice != null">item_price,</if>
+            <if test="itemQuantity != null">item_quantity,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="statementId != null">#{statementId},</if>
+            <if test="itemId != null">#{itemId},</if>
+            <if test="itemName != null">#{itemName},</if>
+            <if test="itemPrice != null">#{itemPrice},</if>
+            <if test="itemQuantity != null">#{itemQuantity},</if>
+        </trim>
+    </insert>
+
+    <insert id="batchInsertBusStatementItem">
+        insert into bus_statement_item(statement_id,item_id,item_name,item_price,item_quantity)
+        values
+        <foreach collection="list" separator="," item="item">
+            (#{item.statementId}, #{item.itemId}, #{item.itemName}, #{item.itemPrice}, #{item.itemQuantity})
+        </foreach>
+    </insert>
+
+    <delete id="deleteBusStatementItemByStatementId" parameterType="Long">
+        delete from bus_statement_item where statement_id = #{statementId}
+    </delete>
+</mapper>

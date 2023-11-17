@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ms.car.flow.mapper.BusBpmnInfoMapper">
+    
+    <resultMap type="BusBpmnInfo" id="BusBpmnInfoResult">
+        <result property="id"    column="id"    />
+        <result property="bpmnLabel"    column="bpmn_label"    />
+        <result property="bpmnType"    column="bpmn_type"    />
+        <result property="processDefinitionKey"    column="process_definition_key"    />
+        <result property="deployTime"    column="deploy_time"    />
+        <result property="version"    column="version"    />
+        <result property="info"    column="info"    />
+    </resultMap>
+
+    <sql id="selectBusBpmnInfoVo">
+        select id, bpmn_label, bpmn_type, process_definition_key, deploy_time, version, info from bus_bpmn_info
+    </sql>
+
+    <select id="selectBusBpmnInfoList" parameterType="BusBpmnInfo" resultMap="BusBpmnInfoResult">
+        <include refid="selectBusBpmnInfoVo"/>
+        <where>  
+            <if test="bpmnType != null "> and bpmn_type = #{bpmnType}</if>
+            <if test="params.beginDeployTime != null and params.beginDeployTime != '' and params.endDeployTime != null and params.endDeployTime != ''"> and deploy_time between #{params.beginDeployTime} and #{params.endDeployTime}</if>
+        </where>
+        order by version desc
+    </select>
+    
+    <select id="selectBusBpmnInfoById" parameterType="Long" resultMap="BusBpmnInfoResult">
+        <include refid="selectBusBpmnInfoVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectLastestBpmnInfoByType" resultMap="BusBpmnInfoResult">
+        <include refid="selectBusBpmnInfoVo"/>
+        where bpmn_type = #{bpmnType}
+        order by version desc
+        limit 1
+    </select>
+
+    <insert id="insertBusBpmnInfo" parameterType="BusBpmnInfo" useGeneratedKeys="true" keyProperty="id">
+        insert into bus_bpmn_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="bpmnLabel != null">bpmn_label,</if>
+            <if test="bpmnType != null">bpmn_type,</if>
+            <if test="processDefinitionKey != null">process_definition_key,</if>
+            <if test="deployTime != null">deploy_time,</if>
+            <if test="version != null">version,</if>
+            <if test="info != null">info,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="bpmnLabel != null">#{bpmnLabel},</if>
+            <if test="bpmnType != null">#{bpmnType},</if>
+            <if test="processDefinitionKey != null">#{processDefinitionKey},</if>
+            <if test="deployTime != null">#{deployTime},</if>
+            <if test="version != null">#{version},</if>
+            <if test="info != null">#{info},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBusBpmnInfo" parameterType="BusBpmnInfo">
+        update bus_bpmn_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="bpmnLabel != null">bpmn_label = #{bpmnLabel},</if>
+            <if test="bpmnType != null">bpmn_type = #{bpmnType},</if>
+            <if test="processDefinitionKey != null">process_definition_key = #{processDefinitionKey},</if>
+            <if test="deployTime != null">deploy_time = #{deployTime},</if>
+            <if test="version != null">version = #{version},</if>
+            <if test="info != null">info = #{info},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBusBpmnInfoById" parameterType="Long">
+        delete from bus_bpmn_info where id = #{id}
+    </delete>
+
+    <delete id="deleteBusBpmnInfoByIds" parameterType="String">
+        delete from bus_bpmn_info where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ms.car.appointment.mapper.BusServiceItemMapper">
+
+    <resultMap type="BusServiceItem" id="BusServiceItemResult">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="originalPrice" column="original_price"/>
+        <result property="discountPrice" column="discount_price"/>
+        <result property="carPackage" column="car_package"/>
+        <result property="info" column="info"/>
+        <result property="createTime" column="create_time"/>
+        <result property="serviceCatalog" column="service_catalog"/>
+        <result property="auditStatus" column="audit_status"/>
+        <result property="saleStatus" column="sale_status"/>
+    </resultMap>
+
+    <sql id="selectBusServiceItemVo">
+        select id,
+               name,
+               original_price,
+               discount_price,
+               car_package,
+               info,
+               create_time,
+               service_catalog,
+               audit_status,
+               sale_status
+        from bus_service_item
+    </sql>
+
+    <select id="selectBusServiceItemList" parameterType="BusServiceItem" resultMap="BusServiceItemResult">
+        <include refid="selectBusServiceItemVo"/>
+        <where>
+            <if test="name != null  and name != ''">and name like concat('%', #{name}, '%')</if>
+            <if test="carPackage != null ">and car_package = #{carPackage}</if>
+            <if test="serviceCatalog != null ">and service_catalog = #{serviceCatalog}</if>
+            <if test="auditStatus != null ">and audit_status = #{auditStatus}</if>
+            <if test="saleStatus != null ">and sale_status = #{saleStatus}</if>
+        </where>
+    </select>
+
+    <select id="selectBusServiceItemById" parameterType="Long" resultMap="BusServiceItemResult">
+        <include refid="selectBusServiceItemVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertBusServiceItem" parameterType="BusServiceItem" useGeneratedKeys="true" keyProperty="id">
+        insert into bus_service_item
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null">name,</if>
+            <if test="originalPrice != null">original_price,</if>
+            <if test="discountPrice != null">discount_price,</if>
+            <if test="carPackage != null">car_package,</if>
+            <if test="info != null">info,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="serviceCatalog != null">service_catalog,</if>
+            <if test="auditStatus != null">audit_status,</if>
+            <if test="saleStatus != null">sale_status,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null">#{name},</if>
+            <if test="originalPrice != null">#{originalPrice},</if>
+            <if test="discountPrice != null">#{discountPrice},</if>
+            <if test="carPackage != null">#{carPackage},</if>
+            <if test="info != null">#{info},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="serviceCatalog != null">#{serviceCatalog},</if>
+            <if test="auditStatus != null">#{auditStatus},</if>
+            <if test="saleStatus != null">#{saleStatus},</if>
+        </trim>
+    </insert>
+
+    <update id="updateBusServiceItem" parameterType="BusServiceItem">
+        update bus_service_item
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null">name = #{name},</if>
+            <if test="originalPrice != null">original_price = #{originalPrice},</if>
+            <if test="discountPrice != null">discount_price = #{discountPrice},</if>
+            <if test="carPackage != null">car_package = #{carPackage},</if>
+            <if test="info != null">info = #{info},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="serviceCatalog != null">service_catalog = #{serviceCatalog},</if>
+            <if test="auditStatus != null">audit_status = #{auditStatus},</if>
+            <if test="saleStatus != null">sale_status = #{saleStatus},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <update id="updateStatus">
+        update bus_service_item
+        set sale_status = #{status}
+        where id = #{id}
+    </update>
+
+    <update id="updateAuditStatus">
+        update bus_service_item
+        set audit_status = #{auditStatus}
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBusServiceItemById" parameterType="Long">
+        delete
+        from bus_service_item
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteBusServiceItemByIds" parameterType="String">
+        delete from bus_service_item where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
